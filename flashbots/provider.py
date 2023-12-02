@@ -13,23 +13,27 @@ from web3 import Web3
 
 def get_default_endpoint() -> URI:
     return URI(
-        os.environ.get("FLASHBOTS_HTTP_PROVIDER_URI", "https://relay.flashbots.net")
+        os.environ.get("FLASHBOTS_HTTP_PROVIDER_URI",
+                       "https://relay.flashbots.net")
     )
 
 
 class FlashbotProvider(HTTPProvider):
+    echo_api_key: Optional[str] = None
     logger = logging.getLogger("web3.providers.FlashbotProvider")
 
     def __init__(
         self,
         signature_account: LocalAccount,
         endpoint_uri: Optional[Union[URI, str]] = None,
+        echo_api_key: Optional[str] = None,
         request_kwargs: Optional[Any] = None,
         session: Optional[Any] = None,
     ):
         _endpoint_uri = endpoint_uri or get_default_endpoint()
         super().__init__(_endpoint_uri, request_kwargs, session)
         self.signature_account = signature_account
+        self.echo_api_key = echo_api_key
 
     def make_request(self, method: RPCEndpoint, params: Any) -> RPCResponse:
         self.logger.debug(
@@ -47,6 +51,9 @@ class FlashbotProvider(HTTPProvider):
         headers = self.get_request_headers() | {
             "X-Flashbots-Signature": f"{self.signature_account.address}:{signed_message.signature.hex()}"
         }
+
+        if self.echo_api_key:
+            headers["X-Api-Key"] = self.echo_api_key
 
         if ("goerli" in self.endpoint_uri) and (method == "eth_sendPrivateTransaction"):
             raise NotImplementedError(

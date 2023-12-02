@@ -13,8 +13,9 @@ from .provider import FlashbotProvider
 DEFAULT_FLASHBOTS_RELAY = "https://relay.flashbots.net"
 
 
-def flashbot(
+def flashbot_echo(
     w3: Web3,
+    echo_api_key: str,
     signature_account: LocalAccount,
     endpoint_uri: Optional[Union[URI, str]] = None,
 ):
@@ -22,7 +23,8 @@ def flashbot(
     Injects the flashbots module and middleware to w3.
     """
 
-    flashbots_provider = FlashbotProvider(signature_account, endpoint_uri)
+    flashbots_provider = FlashbotProvider(
+        signature_account, endpoint_uri, echo_api_key)
 
     # goerli connection requires extra PoA middleware
     if endpoint_uri is not None and "goerli" in endpoint_uri:
