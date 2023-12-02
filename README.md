@@ -1,5 +1,14 @@
 # web3-flashbots
 
+> **Info**
+> Echo patch: added the support for the `X-Api-Key` header for
+> the Chainbound Echo RPC.
+
+> **Info**
+> How to use the patched version:
+> Just replace the call to `flashbot(web3, signer, builder_endpoint)`
+> with `flashbot_echo(web3, ECHO_API_KEY, signer, builder_endpoint)`.
+
 This library works by injecting flashbots as a new module in the Web3.py instance, which allows submitting "bundles" of transactions directly to miners. This is done by also creating a middleware which captures calls to `eth_sendBundle` and `eth_callBundle`, and sends them to an RPC endpoint which you have specified, which corresponds to `mev-geth`.
 
 To apply correct headers we use the `flashbot` method which injects the correct header on POST.
